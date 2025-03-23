@@ -1,4 +1,5 @@
-
+using OrderService.Application.DependencyInjection;
+using OrderService.Infrastructure;
 namespace OrderService.Api
 {
     public class Program
@@ -6,6 +7,9 @@ namespace OrderService.Api
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+
+            builder.Services.AddApplicationServices();
+            builder.Services.AddInfrastructureServices(builder.Configuration);
 
             // Add services to the container.
 
