@@ -12,15 +12,18 @@ namespace OrderService.Api.Controllers
     public class OrderController : ControllerBase
     {
         private readonly IMediator _mediator;
+        private readonly ILogger<OrderController> _logger;
 
-        public OrderController(IMediator mediator)
+        public OrderController(IMediator mediator, ILogger<OrderController> logger)
         {
             _mediator = mediator;
+            _logger = logger;
         }
 
         [HttpPost("create")]
         public async Task<ActionResult<CreatedOrderDto>> CreateOrder(CreateOrderCommand command)
         {
+            _logger.LogInformation("Creating order for customer {CustomerId}", command.CustomerId);
             var result = await _mediator.Send(command);
             return Ok(result);
         }

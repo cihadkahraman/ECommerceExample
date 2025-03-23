@@ -15,6 +15,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrderService.Domain", "Serv
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrderService.Infrastructure", "Services\OrderService\OrderService.Infrastructure\OrderService.Infrastructure.csproj", "{31AF54BB-9B2B-4265-962A-AD2E4232D446}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{13817B66-7162-4E98-ABE0-14E62CF4CB7C}"
+	ProjectSection(SolutionItems) = preProject
+		docker-compose.graylog.yml = docker-compose.graylog.yml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "StockService", "StockService", "{4A768A3C-38DA-4E6C-955F-4ED9943E014B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -47,5 +54,6 @@ Global
 		{7EF09122-DDDB-491C-BBFB-9E4924D063DD} = {BF91485E-B546-44C9-B498-4497040AFF08}
 		{0C9E11A7-88A8-482B-BFAC-82A68C534785} = {BF91485E-B546-44C9-B498-4497040AFF08}
 		{31AF54BB-9B2B-4265-962A-AD2E4232D446} = {BF91485E-B546-44C9-B498-4497040AFF08}
+		{4A768A3C-38DA-4E6C-955F-4ED9943E014B} = {15373F50-CA98-4ED0-AD8E-C580E9D0BD2D}
 	EndGlobalSection
 EndGlobal

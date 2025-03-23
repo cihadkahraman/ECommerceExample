@@ -52,8 +52,10 @@ namespace OrderService.Application.Orders.Commands
 
             await _orderRepository.AddAsync(order);
 
+            var correlationId = Guid.NewGuid();
             var integrationEvent = new OrderCreatedIntegrationEvent
             {
+                CorrelationId = correlationId,
                 OrderId = order.Id,
                 CustomerId = order.CustomerId,
                 CreatedAt = DateTime.UtcNow
