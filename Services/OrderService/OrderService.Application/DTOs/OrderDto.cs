@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OrderService.Application.Orders.Events;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -23,11 +24,5 @@ namespace OrderService.Application.DTOs
         public List<OrderItemDto> Items { get; set; } = new();
     }
 
-    public class OrderItemDto
-    {
-        public int ProductId { get; set; }
-        public string ProductName { get; set; } = string.Empty;
-        public int Quantity { get; set; }
-        public decimal Price { get; set; }
-    }
+    
 }

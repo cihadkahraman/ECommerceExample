@@ -2,14 +2,8 @@
 using OrderService.Application.Abstractions;
 using OrderService.Application.Abstractions.Messaging;
 using OrderService.Application.DTOs;
-using OrderService.Application.Orders.Events;
 using OrderService.Domain.Entities;
 using OrderService.Domain.ValueObjects;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OrderService.Application.Orders.Commands
 {
@@ -35,8 +29,8 @@ namespace OrderService.Application.Orders.Commands
                 request.ZipCode,
                 request.Country
             );
-
-            var order = new Order(request.CustomerId, address);
+            
+            List<OrderItem> orderItems = new List<OrderItem>();
 
             foreach (var item in request.Items)
             {
@@ -47,21 +41,12 @@ namespace OrderService.Application.Orders.Commands
                     new Money(item.Price)
                 );
 
-                order.AddItem(orderItem);
+                orderItems.Add(orderItem);
             }
 
+            var order = new Order(request.CustomerId, address, orderItems);
+
             await _orderRepository.AddAsync(order);
-
-            var correlationId = Guid.NewGuid();
-            var integrationEvent = new OrderCreatedIntegrationEvent
-            {
-                CorrelationId = correlationId,
-                OrderId = order.Id,
-                CustomerId = order.CustomerId,
-                CreatedAt = DateTime.UtcNow
-            };
-
-            await _eventBusPublisher.PublishAsync(integrationEvent, queueName: "order-created");
 
             await _unitOfWork.SaveChangesAsync();
 

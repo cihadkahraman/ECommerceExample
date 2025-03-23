@@ -26,21 +26,19 @@ namespace OrderService.Infrastructure.Persistence
 
         public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
-            //var domainEntities = _context.ChangeTracker
-            //    .Entries<AggregateRoot>()
-            //    .Where(e => e.Entity.DomainEvents.Any())
-            //    .ToList();
+            var domainEntities = _context.ChangeTracker
+            .Entries<AggregateRoot>()
+            .Where(e => e.Entity.DomainEvents.Any())
+            .ToList();
 
-            //var domainEvents = domainEntities
-            //    .SelectMany(e => e.Entity.DomainEvents)
-            //    .ToList();
+            var domainEvents = domainEntities
+                .SelectMany(e => e.Entity.DomainEvents)
+                .ToList();
 
-            //await _eventDispatcher.DispatchAsync(domainEvents);
+            foreach (var entity in domainEntities)
+                entity.Entity.ClearDomainEvents();
 
-            //foreach (var entity in domainEntities)
-            //    entity.Entity.ClearDomainEvents();
-
-            
+            await _eventDispatcher.DispatchAsync(domainEvents);
 
             var result = await _context.SaveChangesAsync(cancellationToken);
 

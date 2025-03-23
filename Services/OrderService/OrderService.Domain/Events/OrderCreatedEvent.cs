@@ -1,23 +1,22 @@
-﻿using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using OrderService.Domain.Common;
+using OrderService.Domain.Entities;
 
 namespace OrderService.Domain.Events
 {
-    public class OrderCreatedEvent : INotification
+    public class OrderCreatedEvent : DomainEvent
     {
         public int OrderId { get; }
         public int CustomerId { get; }
-        public DateTime CreatedAt { get; }
+        public List<OrderItem> OrderItems { get; } = new();
 
-        public OrderCreatedEvent(int orderId, int customerId, DateTime createdAt)
+        public OrderCreatedEvent(int orderId, int customerId, DateTime createdAt, List<OrderItem> orderItems)
         {
             OrderId = orderId;
             CustomerId = customerId;
-            CreatedAt = createdAt;
+            foreach (var item in orderItems)
+            {
+                OrderItems.Add(item);
+            }
         }
     }
 }

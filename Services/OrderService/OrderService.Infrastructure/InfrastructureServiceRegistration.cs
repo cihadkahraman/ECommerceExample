@@ -23,7 +23,6 @@ namespace OrderService.Infrastructure
             services.AddScoped<IOrderRepository, OrderRepository>();
             services.AddScoped<IDomainEventDispatcher, DomainEventDispatcher>();
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
-            services.AddScoped<IOrderRepository, OrderRepository>();
 
             services.AddMassTransit(x =>
             {

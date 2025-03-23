@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using OrderService.Application.DTOs;
+using OrderService.Application.Orders.Events;
 using OrderService.Domain.Entities;
 using System;
 using System.Collections.Generic;

@@ -2,6 +2,7 @@
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
+using OrderService.Application.Behaviors;
 
 
 namespace OrderService.Application.DependencyInjection
@@ -17,7 +18,7 @@ namespace OrderService.Application.DependencyInjection
 
             // Validation
             services.AddValidatorsFromAssembly(assembly);
-            services.AddTransient(typeof(IPipelineBehavior<,>), typeof(Behaviors.ValidationBehavior<,>));
+            services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
 
             services.AddAutoMapper(assembly);
 

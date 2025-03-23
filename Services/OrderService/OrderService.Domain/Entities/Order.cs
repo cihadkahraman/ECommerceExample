@@ -23,14 +23,24 @@ namespace OrderService.Domain.Entities
 
         private Order() { }
 
-        public Order(int customerId, Address shippingAddress)
+        public Order(int customerId, Address shippingAddress, List<OrderItem> items)
         {
+            if (!items.Any())
+                throw new DomainException("Siparişte en az bir ürün olmalıdır.");
+
             CustomerId = customerId;
             ShippingAddress = shippingAddress;
             CreatedAt = DateTime.UtcNow;
             Status = OrderStatus.Pending;
 
-            AddDomainEvent(new OrderCreatedEvent(Id, CustomerId, CreatedAt));
+            ;
+
+            foreach (var item in items)
+            {
+                AddItem(item);
+            }
+
+            AddDomainEvent(new OrderCreatedEvent(Id, CustomerId, CreatedAt, _items));
         }
 
         public void AddItem(OrderItem item)

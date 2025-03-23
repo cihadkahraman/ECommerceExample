@@ -1,5 +1,6 @@
 ﻿using MassTransit;
 using Microsoft.EntityFrameworkCore;
+using OrderService.Domain.Common;
 using OrderService.Domain.Entities;
 using OrderService.Domain.ValueObjects;
 using System;
@@ -20,6 +21,9 @@ namespace OrderService.Infrastructure.Persistence.Contexts
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+
+            modelBuilder.Ignore<DomainEvent>();
+
             //Models
             modelBuilder.Entity<Order>(builder =>
             {
@@ -29,10 +33,6 @@ namespace OrderService.Infrastructure.Persistence.Contexts
             {
                 builder.OwnsOne(o => o.Price).WithOwner();
             });
-
-            //Fluent Api
-            modelBuilder.ApplyConfigurationsFromAssembly(typeof(OrderDbContext).Assembly);
-
 
             //Masstransit outboxpattern
             modelBuilder.AddInboxStateEntity();
