@@ -19,7 +19,13 @@ namespace OrderService.Infrastructure.Messaging
 
         public async Task PublishAsync<T>(T message) where T : class
         {
-            await _bus.Publish(message);
+            var correlationId = Guid.NewGuid();
+
+            await _bus.Publish(message, publishContext =>
+            {
+                publishContext.CorrelationId = correlationId;
+                publishContext.Headers.Set("CorrelationId", correlationId);
+            });
         }
     }
 }

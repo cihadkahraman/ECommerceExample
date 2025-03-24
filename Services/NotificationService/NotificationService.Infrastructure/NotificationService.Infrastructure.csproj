@@ -7,15 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\StockService.Application\StockService.Application.csproj" />
+    <ProjectReference Include="..\NotificationService.Application\NotificationService.Application.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Services\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="MassTransit.EntityFrameworkCore" Version="8.4.0" />
     <PackageReference Include="MassTransit.RabbitMQ" Version="8.4.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.3" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.3">
@@ -29,7 +24,6 @@
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="9.0.3" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="9.0.3" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4" />
-    <PackageReference Include="RabbitMQ.Client" Version="7.1.2" />
   </ItemGroup>
 
 </Project>

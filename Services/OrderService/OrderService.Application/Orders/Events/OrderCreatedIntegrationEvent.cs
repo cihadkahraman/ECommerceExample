@@ -11,7 +11,7 @@ namespace OrderService.Application.Orders.Events
     [MessageUrn("order.created")]
     public class OrderCreatedIntegrationEvent
     {
-        public Guid CorrelationId { get; set; }
+        //public Guid CorrelationId { get; set; }
         public int OrderId { get; set; }
         public int CustomerId { get; set; }
         public DateTime CreatedAt { get; set; }

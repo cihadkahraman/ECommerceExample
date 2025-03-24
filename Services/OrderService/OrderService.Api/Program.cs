@@ -22,19 +22,18 @@ namespace OrderService.Api
 
             builder.Host.UseSerilog();
 
-            // Add services to the container.
-
-            builder.Services.AddControllers();
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-            builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
-
-
             builder.Services.AddDefaultCorrelationId(options =>
             {
                 options.RequestHeader = "X-Correlation-ID";
                 options.IncludeInResponse = true;
             });
+
+            // Add services to the container.
+
+            builder.Services.AddControllers();
+            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+            builder.Services.AddEndpointsApiExplorer();
+            builder.Services.AddSwaggerGen();            
 
             var app = builder.Build();
 

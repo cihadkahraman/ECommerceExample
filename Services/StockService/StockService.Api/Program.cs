@@ -22,6 +22,12 @@ namespace StockService.Api
 
             builder.Host.UseSerilog();
 
+            builder.Services.AddDefaultCorrelationId(options =>
+            {
+                options.RequestHeader = "X-Correlation-ID";
+                options.IncludeInResponse = true;
+            });
+
             // Add services to the container.
 
             builder.Services.AddControllers();
@@ -29,11 +35,7 @@ namespace StockService.Api
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
-            builder.Services.AddDefaultCorrelationId(options =>
-            {
-                options.RequestHeader = "X-Correlation-ID";
-                options.IncludeInResponse = true;
-            });
+            
 
             var app = builder.Build();
 

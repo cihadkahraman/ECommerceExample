@@ -9,6 +9,8 @@ using OrderService.Infrastructure.Services;
 using MassTransit;
 using OrderService.Application.Abstractions.Messaging;
 using OrderService.Infrastructure.Messaging;
+using OrderService.Application.Orders.Events;
+using RabbitMQ.Client;
 
 namespace OrderService.Infrastructure
 {
@@ -43,6 +45,16 @@ namespace OrderService.Infrastructure
                         h.Username(configuration["RabbitMq:Username"]);
                         h.Password(configuration["RabbitMq:Password"]);
                     });
+                    cfg.Message<OrderCreatedIntegrationEvent>(x =>
+                    {
+                        x.SetEntityName("order.created");
+                    });
+
+                    cfg.Publish<OrderCreatedIntegrationEvent>(p =>
+                    {
+                        p.ExchangeType = ExchangeType.Fanout;
+                    });
+
                     cfg.ConfigureEndpoints(context);
                 });
 

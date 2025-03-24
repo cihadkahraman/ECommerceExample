@@ -3,17 +3,21 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
-namespace StockService.Application.Orders.Events.Incoming
+namespace NotificationService.Application.Events
 {
     [MessageUrn("order.created")]
     public class OrderCreatedIntegrationEvent
     {
-        //public Guid CorrelationId { get; set; }
+        [JsonPropertyName("orderId")]
         public int OrderId { get; set; }
+        [JsonPropertyName("customerId")]
         public int CustomerId { get; set; }
+        [JsonPropertyName("createdAt")]
         public DateTime CreatedAt { get; set; }
+        [JsonPropertyName("items")]
         public List<OrderItemDto> Items { get; set; } = new();
     }
     public class OrderItemDto

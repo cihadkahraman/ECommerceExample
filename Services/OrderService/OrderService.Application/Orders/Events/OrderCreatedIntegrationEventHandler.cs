@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using OrderService.Application.Abstractions.Messaging;
 using OrderService.Domain.Events;
+using System.Text.Json;
 
 namespace OrderService.Application.Orders.Events
 {
@@ -21,7 +22,7 @@ namespace OrderService.Application.Orders.Events
             var correlationId = Guid.NewGuid();
             var integrationEvent = new OrderCreatedIntegrationEvent
             {
-                CorrelationId = correlationId,
+                //CorrelationId = correlationId,
                 OrderId = notification.OrderId,
                 CustomerId = notification.CustomerId,
                 CreatedAt = DateTime.UtcNow
@@ -38,6 +39,9 @@ namespace OrderService.Application.Orders.Events
                 });
             }
             _logger.LogInformation("Order created: {@Event}", integrationEvent);
+
+            var json = JsonSerializer.Serialize(integrationEvent);
+            Console.WriteLine(json);
 
             await _eventBusPublisher.PublishAsync(integrationEvent);
         }

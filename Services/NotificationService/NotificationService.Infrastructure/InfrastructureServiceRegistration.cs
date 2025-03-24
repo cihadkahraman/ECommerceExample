@@ -1,28 +1,26 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using StockService.Infrastructure.Persistence.Repositories;
-using StockService.Infrastructure.Persistence;
-using StockService.Infrastructure.Persistence.Contexts;
-using Microsoft.EntityFrameworkCore;
-using StockService.Application.Abstractions;
+using NotificationService.Infrastructure.Persistence.Contexts;
+using NotificationService.Infrastructure.Persistence.Repositories;
+using NotificationService.Infrastructure.Persistence;
 using MassTransit;
-using StockService.Application.Abstractions.Messaging;
-using StockService.Infrastructure.Messaging;
-using StockService.Application.Orders.Consumers;
+using NotificationService.Application.Abstractions;
+using NotificationService.Application.Consumers;
+using Microsoft.EntityFrameworkCore;
 using RabbitMQ.Client;
-using StockService.Application.Orders.Events.Incoming;
 
-namespace StockService.Infrastructure
+namespace NotificationService.Infrastructure
 {
     public static class InfrastructureServiceRegistration
     {
         public static IServiceCollection AddInfrastructureServices(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddDbContext<StockDbContext>(options =>
-                options.UseNpgsql(configuration.GetConnectionString("StockConnection")));
+            services.AddDbContext<NotificationDbContext>(options =>
+                options.UseNpgsql(configuration.GetConnectionString("NotificationConnection")));
 
             services.AddScoped<IUnitOfWork, UnitOfWork>();
-            services.AddScoped<IStockRepository, StockRepository>();
+            services.AddScoped<INotificationLogRepository, NotificationLogRepository>();
+            services.AddScoped<ICustomerRepository, CustomerRepository>();
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 
             services.AddMassTransit(x =>
@@ -30,13 +28,6 @@ namespace StockService.Infrastructure
                 x.SetKebabCaseEndpointNameFormatter();
 
                 x.AddConsumer<OrderCreatedIntegrationEventConsumer>();
-
-                x.AddEntityFrameworkOutbox<StockDbContext>(o =>
-                {
-                    o.UsePostgres();
-                    o.UseBusOutbox();
-                    o.QueryDelay = TimeSpan.FromSeconds(1);
-                });
 
                 x.UsingRabbitMq((context, cfg) =>
                 {
@@ -46,7 +37,7 @@ namespace StockService.Infrastructure
                         h.Password(configuration["RabbitMq:Password"]);
                     });
 
-                    cfg.ReceiveEndpoint("stock-order-created-queue", e =>
+                    cfg.ReceiveEndpoint("notification-order-created-queue", e =>
                     {
                         e.ConfigureConsumer<OrderCreatedIntegrationEventConsumer>(context);
 
@@ -55,9 +46,8 @@ namespace StockService.Infrastructure
                 });
             });
 
-            services.AddScoped<IEventBusPublisher, MassTransitEventBusPublisher>();
-
             return services;
         }
     }
 }
+
