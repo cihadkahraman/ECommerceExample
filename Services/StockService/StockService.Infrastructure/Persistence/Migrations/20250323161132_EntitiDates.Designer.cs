@@ -2,18 +2,21 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
-using OrderService.Infrastructure.Persistence.Contexts;
+using StockService.Infrastructure.Persistence.Contexts;
 
 #nullable disable
 
-namespace OrderService.Infrastructure.Migrations
+namespace StockService.Infrastructure.Persistence.Migrations
 {
-    [DbContext(typeof(OrderDbContext))]
-    partial class OrderDbContextModelSnapshot : ModelSnapshot
+    [DbContext(typeof(StockDbContext))]
+    [Migration("20250323161132_EntitiDates")]
+    partial class EntitiDates
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -190,7 +193,7 @@ namespace OrderService.Infrastructure.Migrations
                     b.ToTable("OutboxState");
                 });
 
-            modelBuilder.Entity("OrderService.Domain.Entities.Order", b =>
+            modelBuilder.Entity("StockService.Domain.Entities.Product", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -201,18 +204,22 @@ namespace OrderService.Infrastructure.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<int>("CustomerId")
-                        .HasColumnType("integer");
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("integer");
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Orders");
+                    b.ToTable("Products");
                 });
 
-            modelBuilder.Entity("OrderService.Domain.Entities.OrderItem", b =>
+            modelBuilder.Entity("StockService.Domain.Entities.Stock", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -223,24 +230,18 @@ namespace OrderService.Infrastructure.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<int?>("OrderId")
-                        .HasColumnType("integer");
-
                     b.Property<int>("ProductId")
                         .HasColumnType("integer");
-
-                    b.Property<string>("ProductName")
-                        .IsRequired()
-                        .HasColumnType("text");
 
                     b.Property<int>("Quantity")
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("OrderId");
+                    b.HasIndex("ProductId")
+                        .IsUnique();
 
-                    b.ToTable("OrderItems");
+                    b.ToTable("Stocks");
                 });
 
             modelBuilder.Entity("MassTransit.EntityFrameworkCoreIntegration.OutboxMessage", b =>
@@ -255,78 +256,50 @@ namespace OrderService.Infrastructure.Migrations
                         .HasPrincipalKey("MessageId", "ConsumerId");
                 });
 
-            modelBuilder.Entity("OrderService.Domain.Entities.Order", b =>
+            modelBuilder.Entity("StockService.Domain.Entities.Product", b =>
                 {
-                    b.OwnsOne("OrderService.Domain.ValueObjects.Address", "ShippingAddress", b1 =>
+                    b.OwnsOne("StockService.Domain.ValueObjects.Money", "Price", b1 =>
                         {
-                            b1.Property<int>("OrderId")
-                                .HasColumnType("integer");
-
-                            b1.Property<string>("City")
-                                .IsRequired()
-                                .HasColumnType("text");
-
-                            b1.Property<string>("Country")
-                                .IsRequired()
-                                .HasColumnType("text");
-
-                            b1.Property<string>("State")
-                                .IsRequired()
-                                .HasColumnType("text");
-
-                            b1.Property<string>("Street")
-                                .IsRequired()
-                                .HasColumnType("text");
-
-                            b1.Property<string>("ZipCode")
-                                .IsRequired()
-                                .HasColumnType("text");
-
-                            b1.HasKey("OrderId");
-
-                            b1.ToTable("Orders");
-
-                            b1.WithOwner()
-                                .HasForeignKey("OrderId");
-                        });
-
-                    b.Navigation("ShippingAddress")
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("OrderService.Domain.Entities.OrderItem", b =>
-                {
-                    b.HasOne("OrderService.Domain.Entities.Order", null)
-                        .WithMany("Items")
-                        .HasForeignKey("OrderId");
-
-                    b.OwnsOne("OrderService.Domain.ValueObjects.Money", "Price", b1 =>
-                        {
-                            b1.Property<int>("OrderItemId")
+                            b1.Property<int>("ProductId")
                                 .HasColumnType("integer");
 
                             b1.Property<decimal>("Amount")
-                                .HasColumnType("numeric");
+                                .HasColumnType("decimal(18,2)")
+                                .HasColumnName("Price");
 
                             b1.Property<string>("Currency")
                                 .IsRequired()
-                                .HasColumnType("text");
+                                .HasMaxLength(5)
+                                .HasColumnType("character varying(5)")
+                                .HasColumnName("Currency");
 
-                            b1.HasKey("OrderItemId");
+                            b1.HasKey("ProductId");
 
-                            b1.ToTable("OrderItems");
+                            b1.ToTable("Products");
 
                             b1.WithOwner()
-                                .HasForeignKey("OrderItemId");
+                                .HasForeignKey("ProductId");
                         });
 
                     b.Navigation("Price")
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("OrderService.Domain.Entities.Order", b =>
+            modelBuilder.Entity("StockService.Domain.Entities.Stock", b =>
                 {
-                    b.Navigation("Items");
+                    b.HasOne("StockService.Domain.Entities.Product", "Product")
+                        .WithOne("Stock")
+                        .HasForeignKey("StockService.Domain.Entities.Stock", "ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Product");
+                });
+
+            modelBuilder.Entity("StockService.Domain.Entities.Product", b =>
+                {
+                    b.Navigation("Stock")
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

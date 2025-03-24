@@ -1,6 +1,8 @@
-
 using StockService.Infrastructure;
 using StockService.Application.DependencyInjection;
+using Serilog;
+using CorrelationId;
+using CorrelationId.DependencyInjection;
 
 namespace StockService.Api
 {
@@ -13,12 +15,25 @@ namespace StockService.Api
             builder.Services.AddApplicationServices();
             builder.Services.AddInfrastructureServices(builder.Configuration);
 
+            // Configure Serilog
+            Log.Logger = new LoggerConfiguration()
+                    .ReadFrom.Configuration(builder.Configuration)
+                    .CreateLogger();
+
+            builder.Host.UseSerilog();
+
             // Add services to the container.
 
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+
+            builder.Services.AddDefaultCorrelationId(options =>
+            {
+                options.RequestHeader = "X-Correlation-ID";
+                options.IncludeInResponse = true;
+            });
 
             var app = builder.Build();
 
@@ -30,6 +45,8 @@ namespace StockService.Api
             }
 
             app.UseAuthorization();
+
+            app.UseCorrelationId();
 
 
             app.MapControllers();

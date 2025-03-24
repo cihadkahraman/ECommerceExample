@@ -16,7 +16,6 @@ namespace OrderService.Domain.Entities
         public int CustomerId { get; private set; }
         public Address ShippingAddress { get; private set; }
         public OrderStatus Status { get; private set; }
-        public DateTime CreatedAt { get; private set; }
 
         private readonly List<OrderItem> _items = new();
         public IReadOnlyCollection<OrderItem> Items => _items.AsReadOnly();
@@ -30,7 +29,6 @@ namespace OrderService.Domain.Entities
 
             CustomerId = customerId;
             ShippingAddress = shippingAddress;
-            CreatedAt = DateTime.UtcNow;
             Status = OrderStatus.Pending;
 
             ;

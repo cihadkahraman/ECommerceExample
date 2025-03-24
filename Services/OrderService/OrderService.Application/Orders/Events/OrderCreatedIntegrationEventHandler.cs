@@ -1,6 +1,6 @@
 ﻿using MediatR;
+using Microsoft.Extensions.Logging;
 using OrderService.Application.Abstractions.Messaging;
-using OrderService.Application.DTOs;
 using OrderService.Domain.Events;
 
 namespace OrderService.Application.Orders.Events
@@ -8,10 +8,12 @@ namespace OrderService.Application.Orders.Events
     public class OrderCreatedIntegrationEventHandler : INotificationHandler<OrderCreatedEvent>
     {
         private readonly IEventBusPublisher _eventBusPublisher;
+        private readonly ILogger<OrderCreatedIntegrationEventHandler> _logger;
 
-        public OrderCreatedIntegrationEventHandler(IEventBusPublisher eventBusPublisher)
+        public OrderCreatedIntegrationEventHandler(IEventBusPublisher eventBusPublisher, ILogger<OrderCreatedIntegrationEventHandler> logger)
         {
             _eventBusPublisher = eventBusPublisher;
+            _logger = logger;
         }
 
         public async Task Handle(OrderCreatedEvent notification, CancellationToken cancellationToken)
@@ -35,8 +37,9 @@ namespace OrderService.Application.Orders.Events
                     Price = item.Price.Amount
                 });
             }
+            _logger.LogInformation("Order created: {@Event}", integrationEvent);
 
-            await _eventBusPublisher.PublishAsync(integrationEvent, queueName: "order-created");
+            await _eventBusPublisher.PublishAsync(integrationEvent);
         }
     }
 }

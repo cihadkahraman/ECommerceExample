@@ -17,7 +17,7 @@ namespace OrderService.Infrastructure.Messaging
             _bus = bus;
         }
 
-        public async Task PublishAsync<T>(T message, string queueName) where T : class
+        public async Task PublishAsync<T>(T message) where T : class
         {
             await _bus.Publish(message);
         }
