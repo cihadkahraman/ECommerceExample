@@ -3,6 +3,7 @@ using OrderService.Infrastructure;
 using Serilog;
 using CorrelationId.DependencyInjection;
 using CorrelationId;
+using OrderService.Api.Middlewares;
 namespace OrderService.Api
 {
     public class Program
@@ -14,7 +15,7 @@ namespace OrderService.Api
             builder.Services.AddHttpContextAccessor();
             builder.Services.AddApplicationServices();
             builder.Services.AddInfrastructureServices(builder.Configuration);
-
+            Serilog.Debugging.SelfLog.Enable(msg => Console.WriteLine("SERILOG ERROR: " + msg));
 
             // Configure Serilog
             Log.Logger = new LoggerConfiguration()
@@ -44,6 +45,8 @@ namespace OrderService.Api
             app.UseMiddleware<OrderService.Api.Middlewares.CorrelationIdMiddleware>();
 
             app.UseSerilogRequestLogging();
+
+            app.UseMiddleware<ExceptionMiddleware>();
 
             app.MapControllers();
 

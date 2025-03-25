@@ -22,14 +22,8 @@ namespace OrderService.Application.Orders.Commands
 
         public async Task<CreatedOrderDto> Handle(CreateOrderCommand request, CancellationToken cancellationToken)
         {
-            var address = new Address(
-                request.Street,
-                request.City,
-                request.State,
-                request.ZipCode,
-                request.Country
-            );
-            
+            var address = request.Address;
+
             List<OrderItem> orderItems = new List<OrderItem>();
 
             foreach (var item in request.Items)

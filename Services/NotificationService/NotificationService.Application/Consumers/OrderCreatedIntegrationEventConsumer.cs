@@ -1,5 +1,7 @@
 ﻿using MassTransit;
 using Microsoft.Extensions.Logging;
+using NotificationService.Application.Common.Logging;
+using NotificationService.Application.Common.Models;
 using NotificationService.Application.Common.Serialization;
 using NotificationService.Application.Events;
 using NotificationService.Application.Services;
@@ -29,11 +31,11 @@ namespace NotificationService.Application.Consumers
                 $"Dear customer, your order has been successfully completed.",
                 NotificationChannel.Email
             );
+            var customerId = message.CustomerId;
+            var correlationId = new CorrelationId(context.Headers.GetCorrelationId().Value);
+            var payload = new OrderCreatedLogPayload(message.OrderId, message.CustomerId, message.CreatedAt, message.Items);
 
-            Serilog.Context.LogContext.PushProperty("Payload", JsonSerializer.Serialize(message, JsonDefaults.Options));
-            Serilog.Context.LogContext.PushProperty("CorrelationId", context.Headers.GetCorrelationId());
-
-            _logger.LogInformation("{CustomerId} numaralı müşteriye log gönderiliyor", message.CustomerId);
+            _logger.LogInformationWithPayload($"{customerId} numaralı müşteriye log gönderiliyor", correlationId, payload);
             await _notificationSender.SendNotificationAsync(notification);
         }
     }

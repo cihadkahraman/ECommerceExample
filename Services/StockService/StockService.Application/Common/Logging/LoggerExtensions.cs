@@ -1,9 +1,9 @@
 ﻿using Microsoft.Extensions.Logging;
-using OrderService.Application.Common.Serialization;
+using StockService.Application.Common.Serialization;
 using System.Text.Json;
 using Serilog.Context;
 
-namespace OrderService.Application.Common.Logging
+namespace StockService.Application.Common.Logging
 {
     public static class LoggerExtensions
     {
@@ -56,4 +56,3 @@ namespace OrderService.Application.Common.Logging
         }
     }
 }
-

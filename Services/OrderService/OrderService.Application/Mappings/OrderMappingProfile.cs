@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using OrderService.Application.DTOs;
+using OrderService.Application.Orders.Commands;
 using OrderService.Application.Orders.Events;
 using OrderService.Domain.Entities;
 using System;
@@ -26,6 +27,9 @@ namespace OrderService.Application.Mappings
 
             CreateMap<OrderItem, OrderItemDto>()
                 .ForMember(dest => dest.Price, opt => opt.MapFrom(src => src.Price.Amount));
+
+            CreateMap<CreateOrderRequest, CreateOrderCommand>();
+            CreateMap<CreateOrderItemDto, CreateOrderItem>();
         }
     }
 }

@@ -8,6 +8,9 @@ using OrderService.Application.Orders.Queries;
 using OrderService.Application.Common.Logging;
 using Serilog.Context;
 using System.Text.Json;
+using AutoMapper;
+using OrderService.Api.Models;
+using OrderService.Domain.Enums;
 
 namespace OrderService.Api.Controllers
 {
@@ -17,20 +20,27 @@ namespace OrderService.Api.Controllers
     {
         private readonly IMediator _mediator;
         private readonly ILogger<OrderController> _logger;
+        private readonly IMapper _mapper;
 
-        public OrderController(IMediator mediator, ILogger<OrderController> logger)
+        public OrderController(IMediator mediator, ILogger<OrderController> logger, IMapper mapper)
         {
             _mediator = mediator;
             _logger = logger;
+            _mapper = mapper;
         }
 
         [HttpPost("create")]
-        public async Task<ActionResult<CreatedOrderDto>> CreateOrder(CreateOrderCommand command)
+        public async Task<ActionResult<CreatedOrderDto>> CreateOrder([FromBody] CreateOrderRequest request)
         {
+            var response = new CreateOrderResponse();
+            var command = _mapper.Map<CreateOrderCommand>(request);
             var correlationId = HttpContext.Items["CorrelationId"]?.ToString() ?? System.Guid.NewGuid().ToString();
             _logger.LogInformationWithPayload($"{command.CustomerId} numaralı müşteri için sipariş oluşturuluyor.", correlationId);
-            var result = await _mediator.Send(command);
-            return Ok(result);
+            var commandResult = await _mediator.Send(command);
+            response.OrderId = commandResult.OrderId;
+            response.OrderStatus= OrderStatus.Pending.ToString();
+            response.Message = "Siparişiniz alınmıştır. Siparişinizi ilgili bölümden takip edebilirsiniz.";
+            return Ok(response);
         }
 
         [HttpGet("{id}")]
