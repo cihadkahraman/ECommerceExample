@@ -28,7 +28,7 @@ internal class Program
             { "TimeStamp", new TimestampColumnWriter() },
             { "Exception", new ExceptionColumnWriter() },
             { "CorrelationId", new SinglePropertyColumnWriter("CorrelationId") },
-            { "Payload", new SinglePropertyColumnWriter("Payload",dbType : NpgsqlDbType.Text) },
+            { "Payload", new SinglePropertyColumnWriter("Payload",dbType : NpgsqlDbType.Jsonb) },
             { "Properties", new LogEventSerializedColumnWriter() }
         };
 
@@ -92,8 +92,9 @@ internal class Program
 
         app.MapControllers();
 
-        app.UseMiddleware<LogEnrichmentMiddleware>();
         app.UseSerilogRequestLogging();
+
+        app.UseMiddleware<NotificationService.Api.Middlewares.CorrelationIdMiddleware>();
 
         app.Run();
     }

@@ -11,6 +11,7 @@ namespace OrderService.Api
         {
             var builder = WebApplication.CreateBuilder(args);
 
+            builder.Services.AddHttpContextAccessor();
             builder.Services.AddApplicationServices();
             builder.Services.AddInfrastructureServices(builder.Configuration);
 
@@ -21,12 +22,6 @@ namespace OrderService.Api
                     .CreateLogger();
 
             builder.Host.UseSerilog();
-
-            builder.Services.AddDefaultCorrelationId(options =>
-            {
-                options.RequestHeader = "X-Correlation-ID";
-                options.IncludeInResponse = true;
-            });
 
             // Add services to the container.
 
@@ -44,10 +39,11 @@ namespace OrderService.Api
                 app.UseSwaggerUI();
             }
 
-            app.UseCorrelationId();
-
             app.UseAuthorization();
 
+            app.UseMiddleware<OrderService.Api.Middlewares.CorrelationIdMiddleware>();
+
+            app.UseSerilogRequestLogging();
 
             app.MapControllers();
 

@@ -23,7 +23,6 @@ namespace OrderService.Application.Orders.Events
             var correlationId = Guid.NewGuid();
             var integrationEvent = new OrderCreatedIntegrationEvent
             {
-                //CorrelationId = correlationId,
                 OrderId = notification.OrderId,
                 CustomerId = notification.CustomerId,
                 CreatedAt = DateTime.UtcNow

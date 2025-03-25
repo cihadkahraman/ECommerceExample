@@ -33,7 +33,7 @@ namespace StockService.Application.Orders.Consumers
 
                 if (stock == null)
                 {
-                    _logger.LogError("Stok bulunamadı {ProductId}, {CorrelationId}", item.ProductId, context.CorrelationId);
+                    _logger.LogError("Stok bulunamadı {ProductId}, {CorrelationId}", item.ProductId, context.Headers.GetCorrelationId());
                     throw new InvalidOperationException("Stok bulunamadı");
                 }
                 

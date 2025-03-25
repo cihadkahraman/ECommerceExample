@@ -27,8 +27,8 @@ namespace OrderService.Api.Controllers
         [HttpPost("create")]
         public async Task<ActionResult<CreatedOrderDto>> CreateOrder(CreateOrderCommand command)
         {
-
-            _logger.LogInformationWithPayload($"{command.CustomerId} numaralı müşteri için sipariş oluşturuluyor.");
+            var correlationId = HttpContext.Items["CorrelationId"]?.ToString() ?? System.Guid.NewGuid().ToString();
+            _logger.LogInformationWithPayload($"{command.CustomerId} numaralı müşteri için sipariş oluşturuluyor.", correlationId);
             var result = await _mediator.Send(command);
             return Ok(result);
         }
