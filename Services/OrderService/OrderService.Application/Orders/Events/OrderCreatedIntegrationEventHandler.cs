@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Microsoft.Extensions.Logging;
 using OrderService.Application.Abstractions.Messaging;
+using OrderService.Application.Common.Serialization;
 using OrderService.Domain.Events;
 using System.Text.Json;
 
@@ -40,8 +41,7 @@ namespace OrderService.Application.Orders.Events
             }
             _logger.LogInformation("Order created: {@Event}", integrationEvent);
 
-            var json = JsonSerializer.Serialize(integrationEvent);
-            Console.WriteLine(json);
+            var json = JsonSerializer.Serialize(integrationEvent, JsonDefaults.Options);
 
             await _eventBusPublisher.PublishAsync(integrationEvent);
         }

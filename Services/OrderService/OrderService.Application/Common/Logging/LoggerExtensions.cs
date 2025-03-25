@@ -1,0 +1,57 @@
+﻿using Microsoft.Extensions.Logging;
+using OrderService.Application.Common.Serialization;
+using System.Text.Json;
+using Serilog.Context;
+
+namespace OrderService.Application.Common.Logging
+{
+    public static class LoggerExtensions
+    {
+        public static void LogInformationWithPayload(
+            this ILogger logger,
+            string messageTemplate,
+            params object[] contextItems)
+        {
+            var disposables = new List<IDisposable>();
+
+            for (int i = 0; i < contextItems.Length; i++)
+            {
+                var item = contextItems[i];
+
+                string propertyName = item switch
+                {
+                    string str when str.ToLower().Contains("correlation") => "CorrelationId",
+                    string str when str.ToLower().Contains("payload") => "Payload",
+                    _ when item?.GetType().Name.ToLower().Contains("command") == true => "Payload",
+                    _ when item?.GetType().Name.ToLower().Contains("request") == true => "Payload",
+                    _ when item?.GetType().Name.ToLower().Contains("response") == true => "Payload",
+                    _ => $"ContextItem{i + 1}"
+                };
+
+                var value = propertyName == "Payload"
+                    ? JsonSerializer.Serialize(item, JsonDefaults.Options)
+                    : item;
+
+                disposables.Add(LogContext.PushProperty(propertyName, value!));
+            }
+
+            using (new DisposableCollection(disposables))
+            {
+                logger.LogInformation(messageTemplate);
+            }
+        }
+
+        private class DisposableCollection : IDisposable
+        {
+            private readonly List<IDisposable> _disposables;
+            public DisposableCollection(List<IDisposable> disposables) => _disposables = disposables;
+
+            public void Dispose()
+            {
+                foreach (var d in _disposables)
+                    d.Dispose();
+            }
+        }
+    }
+}
+

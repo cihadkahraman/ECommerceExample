@@ -32,8 +32,6 @@ namespace NotificationService.Application.Services
             if (customer == null)
                 throw new DomainException("Müşteri bulunamadı.");
 
-            Console.WriteLine($"Sending {notificationLog.Channel} to {customer.Email ?? customer.PhoneNumber}: {notificationLog.Message}");
-
             var log = NotificationLog.Create
                 (
                     notificationLog.CustomerId,

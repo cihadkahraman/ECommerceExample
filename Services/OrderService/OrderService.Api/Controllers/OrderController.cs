@@ -1,9 +1,13 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using OrderService.Application.Common.Serialization;
 using OrderService.Application.DTOs;
 using OrderService.Application.Orders.Commands;
 using OrderService.Application.Orders.Queries;
+using OrderService.Application.Common.Logging;
+using Serilog.Context;
+using System.Text.Json;
 
 namespace OrderService.Api.Controllers
 {
@@ -23,7 +27,8 @@ namespace OrderService.Api.Controllers
         [HttpPost("create")]
         public async Task<ActionResult<CreatedOrderDto>> CreateOrder(CreateOrderCommand command)
         {
-            _logger.LogInformation("Creating order for customer {CustomerId}", command.CustomerId);
+
+            _logger.LogInformationWithPayload($"{command.CustomerId} numaralı müşteri için sipariş oluşturuluyor.");
             var result = await _mediator.Send(command);
             return Ok(result);
         }

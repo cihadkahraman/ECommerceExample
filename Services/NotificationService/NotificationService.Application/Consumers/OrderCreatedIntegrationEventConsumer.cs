@@ -1,5 +1,6 @@
 ﻿using MassTransit;
 using Microsoft.Extensions.Logging;
+using NotificationService.Application.Common.Serialization;
 using NotificationService.Application.Events;
 using NotificationService.Application.Services;
 using NotificationService.Domain.Entities;
@@ -29,15 +30,10 @@ namespace NotificationService.Application.Consumers
                 NotificationChannel.Email
             );
 
-            Console.WriteLine(JsonSerializer.Serialize(message));
-            Serilog.Context.LogContext.PushProperty("Payload", JsonSerializer.Serialize(message));
+            Serilog.Context.LogContext.PushProperty("Payload", JsonSerializer.Serialize(message, JsonDefaults.Options));
             Serilog.Context.LogContext.PushProperty("CorrelationId", context.Headers.GetCorrelationId());
 
-            _logger.LogInformation("Sending notification to customer with id {CustomerId}", message.CustomerId);
-
-
-
-
+            _logger.LogInformation("{CustomerId} numaralı müşteriye log gönderiliyor", message.CustomerId);
             await _notificationSender.SendNotificationAsync(notification);
         }
     }

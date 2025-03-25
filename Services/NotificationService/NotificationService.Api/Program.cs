@@ -10,6 +10,7 @@ using NotificationService.Api.Middlewares;
 using NpgsqlTypes;
 using System.Text.Encodings.Web;
 using System.Text.Json;
+using System.Text;
 
 internal class Program
 {
@@ -19,15 +20,6 @@ internal class Program
 
         builder.Services.AddApplicationServices();
         builder.Services.AddInfrastructureServices(builder.Configuration);
-
-        builder.Services.Configure<JsonSerializerOptions>(options =>
-        {
-            options.Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping;
-            options.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
-            options.WriteIndented = false;
-        });
-
-        Serilog.Debugging.SelfLog.Enable(msg => Console.WriteLine("SERILOG ERROR: " + msg));
 
         // Configure Serilog
         var columnWriters = new Dictionary<string, ColumnWriterBase>
@@ -51,7 +43,6 @@ internal class Program
             .Enrich.WithThreadId()
             .Enrich.WithCorrelationId()
             .Enrich.WithProperty("Application", "NotificationService")
-            .WriteTo.Console()
             .WriteTo.Graylog(new GraylogSinkOptions
             {
                 HostnameOrAddress = "localhost",

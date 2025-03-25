@@ -7,15 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Common\**" />
-    <EmbeddedResource Remove="Common\**" />
-    <None Remove="Common\**" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="AutoMapper" Version="14.0.0" />
     <PackageReference Include="FluentValidation" Version="11.11.0" />
     <PackageReference Include="MassTransit" Version="8.4.0" />
+    <PackageReference Include="Serilog" Version="4.2.0" />
   </ItemGroup>
 
   <ItemGroup>
