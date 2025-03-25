@@ -15,8 +15,6 @@ namespace OrderService.Api
             builder.Services.AddHttpContextAccessor();
             builder.Services.AddApplicationServices();
             builder.Services.AddInfrastructureServices(builder.Configuration);
-            Serilog.Debugging.SelfLog.Enable(msg => Console.WriteLine("SERILOG ERROR: " + msg));
-
             // Configure Serilog
             Log.Logger = new LoggerConfiguration()
                     .ReadFrom.Configuration(builder.Configuration)
@@ -29,7 +27,12 @@ namespace OrderService.Api
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();            
+            builder.Services.AddSwaggerGen();
+
+            //builder.WebHost.ConfigureKestrel(options =>
+            //{
+            //    options.ListenAnyIP(80); // container içi 80 portunu dinle
+            //});
 
             var app = builder.Build();
 
@@ -39,6 +42,8 @@ namespace OrderService.Api
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
+
+            app.Logger.LogInformation("OrderService basladi");
 
             app.UseAuthorization();
 

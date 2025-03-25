@@ -1,0 +1,51 @@
+version: '3.9'
+
+services:
+  order-service:
+    build:
+      context: Services/OrderService
+      dockerfile: OrderService.Api/Dockerfile
+    ports:
+      - "5001:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__OrderConnection=User ID=admin; Password=Password123*; Server=postgres; Port=5432;Database=orderdb;Pooling=true
+      - RabbitMq__Host=rabbitmq
+      - RabbitMq__Username=guest
+      - RabbitMq__Password=guest
+      - Serilog__WriteTo__0__Args__hostnameOrAddress=graylog
+    depends_on:
+      - postgres
+    networks:
+      - shared-net
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - shared-net
+  postgres:
+    image: postgres:14
+    container_name: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: Password123*
+      POSTGRES_DB: orderdb
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - shared-net
+
+
+networks:
+  shared-net:
+    external: true
+
+volumes:
+  pgdata:

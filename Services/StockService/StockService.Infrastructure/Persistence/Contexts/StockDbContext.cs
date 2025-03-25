@@ -46,7 +46,6 @@ namespace StockService.Infrastructure.Persistence.Contexts
                 });
             });
 
-            // Stock
             modelBuilder.Entity<Stock>(builder =>
             {
                 builder.HasKey(s => s.Id);
@@ -57,7 +56,6 @@ namespace StockService.Infrastructure.Persistence.Contexts
                        .HasForeignKey<Stock>(s => s.ProductId);
             });
 
-            // MassTransit Outbox Pattern
             modelBuilder.AddInboxStateEntity();
             modelBuilder.AddOutboxMessageEntity();
             modelBuilder.AddOutboxStateEntity();

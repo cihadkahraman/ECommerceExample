@@ -45,7 +45,7 @@ namespace NotificationService.Infrastructure.Persistence.Contexts
 
                 builder.Property(n => n.Channel)
                     .IsRequired()
-                    .HasConversion<string>(); // Enum string olarak saklansın
+                    .HasConversion<string>();
 
                 builder.Property(n => n.SentAt)
                     .IsRequired();
