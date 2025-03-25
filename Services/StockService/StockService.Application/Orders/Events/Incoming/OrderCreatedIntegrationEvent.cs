@@ -11,7 +11,7 @@ namespace StockService.Application.Orders.Events.Incoming
     public class OrderCreatedIntegrationEvent
     {
         //public Guid CorrelationId { get; set; }
-        public int OrderId { get; set; }
+        public Guid OrderId { get; set; }
         public int CustomerId { get; set; }
         public DateTime CreatedAt { get; set; }
         public List<OrderItemDto> Items { get; set; } = new();

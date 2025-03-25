@@ -9,7 +9,7 @@ namespace OrderService.Domain.Common
     public abstract class Entity
     {
         public DateTime CreatedAt { get; private set; } = DateTime.UtcNow;
-        public int Id { get; protected set; }
+        public Guid Id { get; protected set; } = Guid.NewGuid();
 
         public bool IsTransient() => Id == default;
 

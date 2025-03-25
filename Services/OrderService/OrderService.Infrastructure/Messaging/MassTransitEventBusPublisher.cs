@@ -12,12 +12,12 @@ namespace OrderService.Infrastructure.Messaging
 {
     public class MassTransitEventBusPublisher : IEventBusPublisher
     {
-        private readonly IBus _bus;
+        private readonly IPublishEndpoint _publishEndpoint;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public MassTransitEventBusPublisher(IBus bus, IHttpContextAccessor httpContextAccessor)
+        public MassTransitEventBusPublisher(IPublishEndpoint publishEndpoint, IHttpContextAccessor httpContextAccessor)
         {
-            _bus = bus;
+            _publishEndpoint = publishEndpoint;
             _httpContextAccessor = httpContextAccessor;
         }
 
@@ -28,7 +28,7 @@ namespace OrderService.Infrastructure.Messaging
             _httpContextAccessor.HttpContext?.Items["CorrelationId"]?.ToString() ??
             Guid.NewGuid().ToString();
 
-            await _bus.Publish(message, publishContext =>
+            await _publishEndpoint.Publish(message, publishContext =>
             {
                 publishContext.CorrelationId = Guid.TryParse(correlationId, out var cid) ? cid : Guid.NewGuid();
                 publishContext.Headers.Set("CorrelationId", correlationId);

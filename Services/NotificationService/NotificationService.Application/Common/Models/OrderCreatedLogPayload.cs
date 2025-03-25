@@ -10,7 +10,7 @@ namespace NotificationService.Application.Common.Models
 {
     public record OrderCreatedLogPayload
     (
-    int OrderId,
+    Guid OrderId,
     int CustomerId,
     DateTime CreatedAt,
     List<OrderItemDto> Items);

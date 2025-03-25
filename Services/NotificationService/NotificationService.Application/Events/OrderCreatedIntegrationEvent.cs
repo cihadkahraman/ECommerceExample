@@ -12,7 +12,7 @@ namespace NotificationService.Application.Events
     public class OrderCreatedIntegrationEvent
     {
         [JsonPropertyName("orderId")]
-        public int OrderId { get; set; }
+        public Guid OrderId { get; set; }
         [JsonPropertyName("customerId")]
         public int CustomerId { get; set; }
         [JsonPropertyName("createdAt")]

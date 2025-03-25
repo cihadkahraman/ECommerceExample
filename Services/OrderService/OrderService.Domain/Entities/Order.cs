@@ -13,6 +13,7 @@ namespace OrderService.Domain.Entities
 {
     public class Order : AggregateRoot
     {
+        public long OrderNumber { get; private set; }
         public int CustomerId { get; private set; }
         public Address ShippingAddress { get; private set; }
         public OrderStatus Status { get; private set; }

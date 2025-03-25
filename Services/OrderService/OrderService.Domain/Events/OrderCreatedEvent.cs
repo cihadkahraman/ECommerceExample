@@ -5,11 +5,11 @@ namespace OrderService.Domain.Events
 {
     public class OrderCreatedEvent : DomainEvent
     {
-        public int OrderId { get; }
+        public Guid OrderId { get; }
         public int CustomerId { get; }
         public List<OrderItem> OrderItems { get; } = new();
 
-        public OrderCreatedEvent(int orderId, int customerId, DateTime createdAt, List<OrderItem> orderItems)
+        public OrderCreatedEvent(Guid orderId, int customerId, DateTime createdAt, List<OrderItem> orderItems)
         {
             OrderId = orderId;
             CustomerId = customerId;

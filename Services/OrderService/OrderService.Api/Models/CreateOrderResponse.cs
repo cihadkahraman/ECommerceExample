@@ -6,7 +6,7 @@ namespace OrderService.Api.Models
     public class CreateOrderResponse
     {
         [JsonPropertyName("Order Number")]
-        public int OrderId { get; set; }
+        public Guid OrderId { get; set; }
         [JsonPropertyName("Order Status")]
         public string OrderStatus { get; set; }
         public string Message { get; set; }

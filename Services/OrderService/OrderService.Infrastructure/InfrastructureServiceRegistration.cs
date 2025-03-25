@@ -11,6 +11,7 @@ using OrderService.Application.Abstractions.Messaging;
 using OrderService.Infrastructure.Messaging;
 using OrderService.Application.Orders.Events;
 using RabbitMQ.Client;
+using Microsoft.Extensions.Logging;
 
 namespace OrderService.Infrastructure
 {
@@ -19,7 +20,13 @@ namespace OrderService.Infrastructure
         public static IServiceCollection AddInfrastructureServices(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddDbContext<OrderDbContext>(options =>
-                options.UseNpgsql(configuration.GetConnectionString("OrderConnection")));
+            {
+                options.UseNpgsql(configuration.GetConnectionString("OrderConnection"));
+
+                // Debug için:
+                options.EnableSensitiveDataLogging();
+                options.LogTo(Console.WriteLine, LogLevel.Information); // SQL sorguları için
+            });
 
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IOrderRepository, OrderRepository>();
