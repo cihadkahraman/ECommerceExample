@@ -1,12 +1,11 @@
 ﻿using MassTransit;
-using StockService.Application.Orders.Events.Incoming;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace StockService.Application.Orders.Events.Outgoing
+namespace OrderService.Application.Orders.Events.Incoming
 {
     [MessageUrn("stock.reserved")]
     public class StockReservedIntegrationEvent

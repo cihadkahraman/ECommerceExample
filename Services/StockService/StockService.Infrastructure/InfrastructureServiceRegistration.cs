@@ -52,6 +52,11 @@ namespace StockService.Infrastructure
                         x.SetEntityName("stock.notreserved");
                     });
 
+                    cfg.Message<StockReservedIntegrationEvent>(x =>
+                    {
+                        x.SetEntityName("stock.reserved");
+                    });
+
                     cfg.ReceiveEndpoint("stock-order-created-queue", e =>
                     {
                         e.ConfigureConsumer<OrderCreatedIntegrationEventConsumer>(context);

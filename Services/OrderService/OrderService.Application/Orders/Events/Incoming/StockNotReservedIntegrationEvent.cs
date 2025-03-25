@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OrderService.Application.Orders.Events.Outgoing
+namespace OrderService.Application.Orders.Events.Incoming
 {
     [MessageUrn("stock.notreserved")]
     public class StockNotReservedIntegrationEvent

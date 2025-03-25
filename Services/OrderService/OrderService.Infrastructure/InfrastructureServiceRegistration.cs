@@ -39,6 +39,7 @@ namespace OrderService.Infrastructure
                 x.SetKebabCaseEndpointNameFormatter();
 
                 x.AddConsumer<StockNotReservedIntegrationEventConsumer>();
+                x.AddConsumer<StockReservedIntegrationEventConsumer>();
 
                 x.AddEntityFrameworkOutbox<OrderDbContext>(o =>
                 {
@@ -70,6 +71,13 @@ namespace OrderService.Infrastructure
                         e.ConfigureConsumer<StockNotReservedIntegrationEventConsumer>(context);
 
                         e.Bind("stock.notreserved", b => b.ExchangeType = ExchangeType.Fanout);
+                    });
+
+                    cfg.ReceiveEndpoint("order-stock-reserved-queue", e =>
+                    {
+                        e.ConfigureConsumer<StockReservedIntegrationEventConsumer>(context);
+
+                        e.Bind("stock.reserved", b => b.ExchangeType = ExchangeType.Fanout);
                     });
 
                     cfg.ConfigureEndpoints(context);
