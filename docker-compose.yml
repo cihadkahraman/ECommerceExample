@@ -16,6 +16,59 @@ services:
       - Serilog__WriteTo__0__Args__hostnameOrAddress=graylog
     depends_on:
       - postgres
+      - rabbitmq
+    networks:
+      - shared-net
+
+  stock-service:
+    build:
+      context: Services/StockService
+      dockerfile: StockService.Api/Dockerfile
+    ports:
+      - "5002:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__StockConnection=User ID=admin; Password=Password123*; Server=postgres; Port=5432;Database=stockdb;Pooling=true
+      - RabbitMq__Host=rabbitmq
+      - RabbitMq__Username=guest
+      - RabbitMq__Password=guest
+      - Serilog__WriteTo__0__Args__hostnameOrAddress=graylog
+    depends_on:
+      - postgres
+      - rabbitmq
+    networks:
+      - shared-net
+  notification-service:
+    build:
+      context: Services/NotificationService
+      dockerfile: NotificationService.Api/Dockerfile
+    ports:
+      - "5003:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__NotificationConnection=User ID=admin; Password=Password123*; Server=postgres; Port=5432;Database=notificationdb;Pooling=true
+      - RabbitMq__Host=rabbitmq
+      - RabbitMq__Username=guest
+      - RabbitMq__Password=guest
+      - Serilog__WriteTo__0__Args__hostnameOrAddress=graylog
+    depends_on:
+      - postgres
+      - rabbitmq
+    networks:
+      - shared-net
+
+  postgres:
+    image: postgres:14
+    container_name: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: Password123*
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./docker-init/init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
       - shared-net
 
@@ -27,21 +80,43 @@ services:
       - "15672:15672"
     networks:
       - shared-net
-  postgres:
-    image: postgres:14
-    container_name: postgres
-    restart: always
+
+  graylog:
+    image: graylog/graylog:5.0
+    container_name: graylog
     environment:
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: Password123*
-      POSTGRES_DB: orderdb
+      - GRAYLOG_PASSWORD_SECRET=some-random-secret
+      - GRAYLOG_ROOT_PASSWORD_SHA2=8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918
+      - GRAYLOG_HTTP_EXTERNAL_URI=http://localhost:9000/
+    entrypoint: /usr/bin/tini -- wait-for-it elasticsearch:9200 -- /docker-entrypoint.sh
+    depends_on:
+      - mongo
+      - elasticsearch
     ports:
-      - "5432:5432"
-    volumes:
-      - pgdata:/var/lib/postgresql/data
+      - "9000:9000"
+      - "12201:12201/udp"
     networks:
       - shared-net
 
+  mongo:
+    image: mongo:5.0
+    container_name: graylog-mongo
+    networks:
+      - shared-net
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch-oss:7.10.2
+    container_name: graylog-elasticsearch
+    environment:
+      - discovery.type=single-node
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    mem_limit: 1g
+    networks:
+      - shared-net
 
 networks:
   shared-net:

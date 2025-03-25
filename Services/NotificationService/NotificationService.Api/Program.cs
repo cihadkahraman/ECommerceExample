@@ -72,6 +72,11 @@ internal class Program
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
 
+        builder.WebHost.ConfigureKestrel(options =>
+        {
+            options.ListenAnyIP(80); // container içi 80 portunu dinle
+        });
+
 
 
         var app = builder.Build();

@@ -19,6 +19,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		docker-compose.graylog.yml = docker-compose.graylog.yml
 		docker-compose.yml = docker-compose.yml
+		docker-init.sql = docker-init.sql
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "StockService", "StockService", "{4A768A3C-38DA-4E6C-955F-4ED9943E014B}"
