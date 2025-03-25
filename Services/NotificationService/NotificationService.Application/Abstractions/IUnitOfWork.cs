@@ -10,5 +10,8 @@ namespace NotificationService.Application.Abstractions
     {
         IRepository<T> GetRepository<T>() where T : class;
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
+
+        INotificationLogRepository NotificationLogs { get; }
+        ICustomerRepository Customers { get; }
     }
 }

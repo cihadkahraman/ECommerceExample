@@ -35,7 +35,7 @@ namespace OrderService.Api.Controllers
             var response = new CreateOrderResponse();
             var command = _mapper.Map<CreateOrderCommand>(request);
             var correlationId = HttpContext.Items["CorrelationId"]?.ToString() ?? System.Guid.NewGuid().ToString();
-            _logger.LogInformationWithPayload($"{command.CustomerId} numaralı müşteri için sipariş oluşturuluyor.", correlationId);
+            _logger.LogInformation($"{command.CustomerId} numaralı müşteri için sipariş oluşturuluyor.");
             var commandResult = await _mediator.Send(command);
             response.OrderId = commandResult.OrderId;
             response.OrderStatus= OrderStatus.Pending.ToString();

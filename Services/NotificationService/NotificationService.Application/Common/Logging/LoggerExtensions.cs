@@ -12,6 +12,25 @@ namespace NotificationService.Application.Common.Logging
             string messageTemplate,
             params object[] contextItems)
         {
+            LogWithPayload(logger, LogLevel.Information, null, messageTemplate, contextItems);
+        }
+
+        public static void LogErrorWithPayload(
+            this ILogger logger,
+            Exception exception,
+            string messageTemplate,
+            params object[] contextItems)
+        {
+            LogWithPayload(logger, LogLevel.Error, exception, messageTemplate, contextItems);
+        }
+
+        private static void LogWithPayload(
+            ILogger logger,
+            LogLevel level,
+            Exception? exception,
+            string messageTemplate,
+            params object[] contextItems)
+        {
             var disposables = new List<IDisposable>();
 
             for (int i = 0; i < contextItems.Length; i++)
@@ -39,7 +58,10 @@ namespace NotificationService.Application.Common.Logging
 
             using (new DisposableCollection(disposables))
             {
-                logger.LogInformation(messageTemplate);
+                if (level == LogLevel.Information)
+                    logger.LogInformation(messageTemplate);
+                else if (level == LogLevel.Error)
+                    logger.LogError(exception, messageTemplate);
             }
         }
 

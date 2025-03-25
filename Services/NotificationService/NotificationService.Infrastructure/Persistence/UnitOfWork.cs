@@ -8,10 +8,15 @@ namespace NotificationService.Infrastructure.Persistence
     {
         private readonly NotificationDbContext _context;
 
-        public UnitOfWork(NotificationDbContext context)
+        public UnitOfWork(NotificationDbContext context, INotificationLogRepository notificationLogRepository, ICustomerRepository customerRepository)
         {
             _context = context;
+            NotificationLogs = notificationLogRepository;
+            Customers = customerRepository;
         }
+
+        public INotificationLogRepository NotificationLogs { get; }
+        public ICustomerRepository Customers { get; }
 
         public IRepository<T> GetRepository<T>() where T : class
             => new Repository<T>(_context);

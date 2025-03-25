@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using NotificationService.Application.Abstractions;
 using NotificationService.Domain.Entities;
+using NotificationService.Domain.Enums;
 using NotificationService.Infrastructure.Persistence.Contexts;
 using System;
 using System.Collections.Generic;
@@ -23,6 +24,13 @@ namespace NotificationService.Infrastructure.Persistence.Repositories
         {
             return await _context.NotificationLogs
                 .Where(x => x.CustomerId == customerId)
+                .ToListAsync();
+        }
+
+        public async Task<List<NotificationLog>> GetFailedNotificationsAsync()
+        {
+            return await _context.Set<NotificationLog>()
+                .Where(n => n.Status == NotificationStatus.Failed)
                 .ToListAsync();
         }
     }

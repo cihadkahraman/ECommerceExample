@@ -18,42 +18,83 @@ namespace NotificationService.Application.Consumers
         private readonly ILogger<OrderCreatedIntegrationEventConsumer> _logger;
         private readonly IEmailService _emailService;
         private readonly ICustomerRepository _customerRepository;
+        private readonly ISmsService _smsService;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public OrderCreatedIntegrationEventConsumer(INotificationSenderService notificationSender, ILogger<OrderCreatedIntegrationEventConsumer> logger, IEmailService emailService, ICustomerRepository customerRepository)
+        public OrderCreatedIntegrationEventConsumer(
+            INotificationSenderService notificationSender,
+            ILogger<OrderCreatedIntegrationEventConsumer> logger,
+            IEmailService emailService,
+            ISmsService smsService,
+            ICustomerRepository customerRepository,
+            IUnitOfWork unitOfWork)
         {
             _notificationSender = notificationSender;
             _logger = logger;
             _emailService = emailService;
+            _smsService = smsService;
             _customerRepository = customerRepository;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task Consume(ConsumeContext<OrderCreatedIntegrationEvent> context)
         {
             var message = context.Message;
+            var correlationId = new CorrelationId(context.Headers.GetCorrelationId().Value);
 
             var customer = await _customerRepository.GetByIdAsync(message.CustomerId);
 
-            if (customer is not null)
+            if (customer is null)
             {
-                await _emailService.SendEmailAsync(customer.Email, "Deneme", $"Dear customer, your order has been successfully completed.");
+                _logger.LogError($"Müşteri bulunamadı: {message.CustomerId}");
+                throw new Exception("Müşteri bulunamadı");
             }
-            else
-            {
-                _logger.LogError("Müşteri bulunamadı: {CustomerId}", message.CustomerId);
-            }
-            
 
-            var notification = NotificationLog.Create(
-                message.CustomerId,
+            
+            var payload = new OrderCreatedLogPayload(message.OrderId, message.CustomerId, message.CreatedAt, message.Items);
+
+            var emailNotification = NotificationLog.Create(
+                customer.Id,
                 $"Dear customer, your order has been successfully completed.",
                 NotificationChannel.Email
             );
-            var customerId = message.CustomerId;
-            var correlationId = new CorrelationId(context.Headers.GetCorrelationId().Value);
-            var payload = new OrderCreatedLogPayload(message.OrderId, message.CustomerId, message.CreatedAt, message.Items);
 
-            _logger.LogInformationWithPayload($"{customerId} numaralı müşteriye log gönderiliyor", correlationId, payload);
-            await _notificationSender.SendNotificationAsync(notification);
+            _logger.LogInformationWithPayload($"{customer.Id} numaralı müşteri logu kaydediliyor", correlationId, payload);
+
+            await _notificationSender.SendNotificationAsync(emailNotification);
+            await _unitOfWork.SaveChangesAsync();
+
+            try
+            {
+                await _emailService.SendEmailAsync(customer.Email, "Order Confirmation", emailNotification.Message);
+                emailNotification.Status = NotificationStatus.Sent;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Mail gönderimi başarısız oldu. SMS'e geçiliyor...");
+                emailNotification.Status = NotificationStatus.Failed;
+
+                var smsNotification = NotificationLog.Create(
+                    customer.Id,
+                    emailNotification.Message,
+                    NotificationChannel.Sms
+                );
+                await _notificationSender.SendNotificationAsync(smsNotification);
+
+                try
+                {
+                    await _smsService.SendSmsAsync(customer.PhoneNumber, smsNotification.Message);
+                    smsNotification.Status = NotificationStatus.Sent;
+                    _logger.LogInformation("SMS fallback başarılı!");
+                }
+                catch (Exception smsEx)
+                {
+                    smsNotification.Status = NotificationStatus.Failed;
+                    _logger.LogError(smsEx, "SMS gönderimi de başarısız oldu.");
+                }
+            }
+
+            await _unitOfWork.SaveChangesAsync();
         }
     }
 }

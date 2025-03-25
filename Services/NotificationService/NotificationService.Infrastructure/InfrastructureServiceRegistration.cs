@@ -11,6 +11,7 @@ using RabbitMQ.Client;
 using NotificationService.Infrastructure.Configuration;
 using NotificationService.Application.Services;
 using NotificationService.Infrastructure.Services;
+using NotificationService.Infrastructure.BackgroundJobs;
 
 namespace NotificationService.Infrastructure
 {
@@ -27,6 +28,9 @@ namespace NotificationService.Infrastructure
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
             services.Configure<SmtpSettings>(configuration.GetSection("SmtpSettings"));
             services.AddScoped<IEmailService, EmailService>();
+            services.AddScoped<ISmsService, FakeSmsService>();
+            services.AddHostedService<FailedNotificationRetryJob>();
+
 
 
             services.AddMassTransit(x =>

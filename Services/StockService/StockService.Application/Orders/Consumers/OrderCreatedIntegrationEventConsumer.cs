@@ -46,7 +46,8 @@ namespace StockService.Application.Orders.Consumers
 
                 if (stock == null || stock.Quantity < item.Quantity)
                 {
-                    _logger.LogWarning("Yetersiz stok veya stok bulunamadı: {ProductId}", item.ProductId);
+                    _logger.LogErrorWithPayload(null,$"Yetersiz stok veya stok bulunamadı: {item.ProductId}",correlationId);
+
                     allInStock = false;
                     break;
                 }

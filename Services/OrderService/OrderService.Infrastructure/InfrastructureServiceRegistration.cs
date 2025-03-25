@@ -23,10 +23,6 @@ namespace OrderService.Infrastructure
             services.AddDbContext<OrderDbContext>(options =>
             {
                 options.UseNpgsql(configuration.GetConnectionString("OrderConnection"));
-
-                // Debug için:
-                options.EnableSensitiveDataLogging();
-                options.LogTo(Console.WriteLine, LogLevel.Information); // SQL sorguları için
             });
 
             services.AddScoped<IUnitOfWork, UnitOfWork>();

@@ -10,5 +10,6 @@ namespace NotificationService.Application.Abstractions
     public interface INotificationLogRepository : IRepository<NotificationLog>
     {
         Task<List<NotificationLog>> GetByCustomerIdAsync(int customerId);
+        Task<List<NotificationLog>> GetFailedNotificationsAsync();
     }
 }
