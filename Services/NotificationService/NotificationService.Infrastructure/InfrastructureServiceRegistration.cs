@@ -8,6 +8,9 @@ using NotificationService.Application.Abstractions;
 using NotificationService.Application.Consumers;
 using Microsoft.EntityFrameworkCore;
 using RabbitMQ.Client;
+using NotificationService.Infrastructure.Configuration;
+using NotificationService.Application.Services;
+using NotificationService.Infrastructure.Services;
 
 namespace NotificationService.Infrastructure
 {
@@ -22,6 +25,9 @@ namespace NotificationService.Infrastructure
             services.AddScoped<INotificationLogRepository, NotificationLogRepository>();
             services.AddScoped<ICustomerRepository, CustomerRepository>();
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+            services.Configure<SmtpSettings>(configuration.GetSection("SmtpSettings"));
+            services.AddScoped<IEmailService, EmailService>();
+
 
             services.AddMassTransit(x =>
             {
