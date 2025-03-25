@@ -11,6 +11,7 @@ using StockService.Infrastructure.Messaging;
 using StockService.Application.Orders.Consumers;
 using RabbitMQ.Client;
 using StockService.Application.Orders.Events.Incoming;
+using StockService.Application.Orders.Events.Outgoing;
 
 namespace StockService.Infrastructure
 {
@@ -44,6 +45,11 @@ namespace StockService.Infrastructure
                     {
                         h.Username(configuration["RabbitMq:Username"]);
                         h.Password(configuration["RabbitMq:Password"]);
+                    });
+
+                    cfg.Message<StockNotReservedIntegrationEvent>(x =>
+                    {
+                        x.SetEntityName("stock.notreserved");
                     });
 
                     cfg.ReceiveEndpoint("stock-order-created-queue", e =>

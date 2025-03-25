@@ -58,5 +58,21 @@ namespace OrderService.Domain.Entities
             Status = OrderStatus.Completed;
         }
 
+        public void MarkAsStockFailed()
+        {
+            if (Status != OrderStatus.Pending)
+                throw new DomainException("Yalnızca bekleyen siparişler iptal edildi olarak işaretlenebilir.");
+
+            Status = OrderStatus.Cancelled;
+        }
+
+        public void MarkAsCompleted()
+        {
+            if (Status != OrderStatus.Pending)
+                throw new DomainException("Yalnızca bekleyen siparişler tamamlandı olarak işaretlenebilir.");
+
+            Status = OrderStatus.Completed;
+        }
+
     }
 }

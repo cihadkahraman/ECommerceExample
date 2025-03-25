@@ -10,9 +10,9 @@ namespace OrderService.Application.Orders.Queries
 {
     public class GetOrderByIdQuery : IRequest<OrderDto>
     {
-        public int OrderId { get; set; }
+        public Guid OrderId { get; set; }
 
-        public GetOrderByIdQuery(int orderId)
+        public GetOrderByIdQuery(Guid orderId)
         {
             OrderId = orderId;
         }

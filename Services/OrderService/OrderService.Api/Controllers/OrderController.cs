@@ -44,7 +44,7 @@ namespace OrderService.Api.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<OrderDto>> GetOrderById(int id)
+        public async Task<ActionResult<OrderDto>> GetOrderById(Guid id)
         {
             var result = await _mediator.Send(new GetOrderByIdQuery(id));
             if (result == null)

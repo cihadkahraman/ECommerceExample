@@ -23,7 +23,6 @@ namespace OrderService.Infrastructure.Messaging
 
         public async Task PublishAsync<T>(T message) where T : class
         {
-            var a = _httpContextAccessor.HttpContext?.Items["CorrelationId"];
             var correlationId =
             _httpContextAccessor.HttpContext?.Items["CorrelationId"]?.ToString() ??
             Guid.NewGuid().ToString();

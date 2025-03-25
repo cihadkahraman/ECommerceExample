@@ -12,6 +12,7 @@ using OrderService.Infrastructure.Messaging;
 using OrderService.Application.Orders.Events;
 using RabbitMQ.Client;
 using Microsoft.Extensions.Logging;
+using OrderService.Application.Orders.Consumers;
 
 namespace OrderService.Infrastructure
 {
@@ -37,6 +38,8 @@ namespace OrderService.Infrastructure
             {
                 x.SetKebabCaseEndpointNameFormatter();
 
+                x.AddConsumer<StockNotReservedIntegrationEventConsumer>();
+
                 x.AddEntityFrameworkOutbox<OrderDbContext>(o =>
                 {
                     o.UsePostgres();
@@ -60,6 +63,13 @@ namespace OrderService.Infrastructure
                     cfg.Publish<OrderCreatedIntegrationEvent>(p =>
                     {
                         p.ExchangeType = ExchangeType.Fanout;
+                    });
+
+                    cfg.ReceiveEndpoint("order-stock-notreserved-queue", e =>
+                    {
+                        e.ConfigureConsumer<StockNotReservedIntegrationEventConsumer>(context);
+
+                        e.Bind("stock.notreserved", b => b.ExchangeType = ExchangeType.Fanout);
                     });
 
                     cfg.ConfigureEndpoints(context);

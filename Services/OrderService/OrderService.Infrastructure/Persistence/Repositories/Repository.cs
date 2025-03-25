@@ -18,7 +18,7 @@ namespace OrderService.Infrastructure.Persistence.Repositories
             _context = context;
         }
 
-        public async Task<T?> GetByIdAsync(int id)
+        public async Task<T?> GetByIdAsync(Guid id)
             => await _context.Set<T>().FindAsync(id);
 
         public async Task<List<T>> GetAllAsync()

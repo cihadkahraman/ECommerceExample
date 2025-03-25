@@ -10,16 +10,16 @@ namespace StockService.Infrastructure.Messaging
 {
     public class MassTransitEventBusPublisher : IEventBusPublisher
     {
-        private readonly IBus _bus;
+        private readonly IPublishEndpoint _publishEndpoint;
 
-        public MassTransitEventBusPublisher(IBus bus)
+        public MassTransitEventBusPublisher(IPublishEndpoint publishEndpoint)
         {
-            _bus = bus;
+            _publishEndpoint = publishEndpoint;
         }
 
-        public async Task PublishAsync<T>(T message, string queueName) where T : class
+        public async Task PublishAsync<T>(T message) where T : class
         {
-            await _bus.Publish(message);
+            await _publishEndpoint.Publish(message);
         }
     }
 }
